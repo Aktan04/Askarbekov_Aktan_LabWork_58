@@ -1,8 +1,31 @@
-@model TModel
+@model Publication
 
-@{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
+<form asp-action="Create" asp-controller="Publication" id="createPublicationForm" asp-anti-forgery="true" class="needs-validation" novalidate enctype="multipart/form-data">
+    @Html.ValidationSummary(true)
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Description" class="form-label">Описание</label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile">Изображение</label>
+                <input required asp-for="ImageFile" type="file" name="ImageFile" class="form-control">
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="UserId" value="@ViewBag.TargetUserId" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Создать публикацию</button>
+    </div>
+</form>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
-<h2>title</h2>
