@@ -1,8 +1,84 @@
-@model TModel
+@model Instagram.ViewModels.UserViewModel
+
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-3">
+                <img src="@Model.User.Avatar" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 150px;">
+            </div>
+            <div class="col-md-6">
+                <h2>@Model.User.NickName</h2>
+                <p>@Model.User.Description</p>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p>Posts: <span id="postCount">@Model.Publications.Count</span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Followers: <span id="followerCount">@Model.User.Followers.Count</span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p>Following: <span id="followingCount">@Model.User.Subscriptions.Count</span></p>
+                    </div>
+                    <div class="col-md-12">
+                        <!-- Subscribe Button -->
+                        @if (ViewBag.IsSubscribed)
+                        {
+                            <button class="btn btn-primary"><a class="text-white" asp-action="Describe" asp-controller="User" asp-route-userId="@Model.User.Id">Describe</a></button>
+
+                        }
+                        else
+                        {
+                            
+                            <button class="btn btn-primary"><a class="text-white" asp-action="Subcribe" asp-controller="User" asp-route-userId="@Model.User.Id">Subscribe</a></button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            @if (Model.Publications.Count == 0)
+            {
+                <p>Публикации еще не добавлены</p>
+            }
+            else
+            {
+                foreach (var post in @Model.Publications)
+                {
+                    
+                    <div class="col-md-4 col-sm-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- File -->
+                                <a asp-action="CreateComment" asp-controller="Publication" asp-route-postId="@post.Id"><img src="@post.Avatar" alt="Post" class="img-fluid"></a>
+                                
+                                <!-- Description -->
+                                <p class="mt-2">@post.Description</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p> 
+                                            <a asp-action="CreateComment" asp-controller="Publication" asp-route-postId="@post.Id">Comments:</a>
+                                            <span id="commentCount">
+                                                @post.Comments.Count.ToString()
+                                
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><a asp-action="CreateLike" asp-controller="Publication" asp-route-postId="@post.Id">Likes:</a><span id="likeCount">@post.Likes.Count.ToString()</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            
+        </div>
+    </div>
+</body>

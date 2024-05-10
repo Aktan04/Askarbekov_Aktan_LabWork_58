@@ -1,8 +1,95 @@
-@model TModel
+@model Instagram.ViewModels.UserViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Profile";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPostModalLabel">Создать публикацию</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @{ Html.RenderPartial("_CreatePublicationPartialView", new Publication()); }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Редактирование профиля</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @{ Html.RenderPartial("_EditProfilePartialView", Model.User); }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col-md-3">
+            <img src="@Model.User.Avatar" alt="Avatar" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
+        </div>
+        <div class="col-md-6">
+            <h2>@Model.User.NickName</h2>
+            <p>@Model.User.Description</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>@Model.Publications.Count</strong> Posts</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>@Model.User.Followers.Count</strong> Followers</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>@Model.User.Subscriptions.Count</strong> Following</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#createPostModal">Create Post</button>
+            <button class="btn btn-secondary mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+        </div>
+    </div>
+    <div class="row mt-5">
+        @if (Model.Publications.Count == 0)
+        {
+            <p class="text-muted">No posts yet</p>
+        }
+        else
+        {
+            @foreach (var post in Model.Publications)
+            {
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="card">
+                        <a asp-action="CreateComment" asp-controller="Publication" asp-route-postId="@post.Id"><img src="@post.Avatar" alt="Post" class="card-img-top"></a>
+                        <div class="card-body">
+                            <p class="card-text">@post.Description</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">Comments: <span>@post.Comments.Count</span></small>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><a asp-action="CreateLike" asp-controller="Publication" asp-route-postId="@post.Id">Likes:</a><span id="likeCount">@post.Likes.Count.ToString()</span></p>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
