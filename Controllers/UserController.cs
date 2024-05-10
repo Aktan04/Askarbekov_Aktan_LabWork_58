@@ -87,7 +87,7 @@ public class UserController : Controller
                 identityUser.Description = user.Description;
                 identityUser.Avatar = user.Avatar;
                 identityUser.Gender = user.Gender;
-                identityUser.ContactPhone = user.ContactPhone;
+                identityUser.PhoneNumber = user.PhoneNumber;
                 var result = await _userManager.UpdateAsync(identityUser);
                 if (result.Succeeded)
                 {

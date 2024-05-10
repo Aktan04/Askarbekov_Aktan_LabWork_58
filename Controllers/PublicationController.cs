@@ -70,7 +70,7 @@ public class PublicationController : Controller
                 publication.Avatar = "/images/" + fileName;
                 await _context.Publications.AddAsync(publication);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Home");// Change to user
+                return RedirectToAction("Index", "User");
             }
         }
         int? userId = Convert.ToInt32(_userManager.GetUserId(User));
