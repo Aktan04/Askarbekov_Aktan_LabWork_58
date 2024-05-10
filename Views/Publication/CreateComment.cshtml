@@ -1,8 +1,58 @@
-@model TModel
+@model Instagram.ViewModels.PostWithCommentViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Post Details";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card">
+                <div class="card-body">
+                    <img src="@Model.Publication.Avatar" class="img-fluid mb-3" alt="Post Image">
+                    <p class="mb-3">@Model.Publication.Description</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Comments: <span>@Model.Publication.Comments.Count</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Likes: <span>@Model.Publication.Likes.Count</span></p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h5>Comments</h5>
+                        @if (Model.Comments.Any())
+                        {
+                            foreach (var comment in Model.Comments)
+                            {
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <p>@comment.Text</p>
+                                        <small>Posted by: @comment.User.UserName</small>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No comments yet.</p>
+                        }
+                    </div>
+                    <form asp-action="CreateComment" asp-controller="Publication" method="post">
+                        <div class="form-group mt-4">
+                            <label for="newComment">Add a Comment</label>
+                            <textarea class="form-control" id="newComment" name="text" rows="3" placeholder="Write your comment here"></textarea>
+                            <input type="hidden" name="postId" value="@Model.Publication.Id" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
