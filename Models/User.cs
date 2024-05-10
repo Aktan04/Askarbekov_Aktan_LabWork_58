@@ -14,4 +14,6 @@ public class User : IdentityUser<int>
     public string? Gender { get; set; }
     [NotMapped]
     public IFormFile? ImageFile { get; set; }
+    public ICollection<UserSubscription>? Subscriptions { get; set; }
+    public ICollection<UserSubscription>? Followers { get; set; }
 }
