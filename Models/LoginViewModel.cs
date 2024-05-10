@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Instagram.Models;
 
-public class LoginVIewModel
+public class LoginViewModel
 {
     [Required(ErrorMessage = "Не указан Email")]
     public string Email { get; set; }
