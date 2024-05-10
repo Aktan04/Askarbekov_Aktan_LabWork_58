@@ -46,7 +46,7 @@ public class AccountController : Controller
                         Redirect(model.ReturnUrl);
                     }
 
-                    return RedirectToAction("Index", "Home");//Change to main page
+                    return RedirectToAction("Index", "Publication");
                 }
             }
             ModelState.AddModelError("", "Invalid email or password");
@@ -101,7 +101,7 @@ public class AccountController : Controller
             {
                 await _userManager.AddToRoleAsync(user, "user");
                 await _signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");// Change to main page
+                return RedirectToAction("Index", "Publication");
             }
 
             foreach (var error in result.Errors)
