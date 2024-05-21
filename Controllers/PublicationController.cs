@@ -118,9 +118,9 @@ public class PublicationController : Controller
     [Authorize]
     public IActionResult CreateLike(int postId, string? returnUrl)
     {
-        var referrer = _httpContextAccessor.HttpContext.Request.Headers["Referer"].ToString();
         var userPost = _context.Publications.FirstOrDefault(p => p.Id == postId);
         int? userId = Convert.ToInt32(_userManager.GetUserId(User));
+        bool isLiked = false;
         if (_context.Likes.FirstOrDefault(l => l.UserId == userId && l.PublicationId == userPost.Id) == null)
         {
             Like like = new Like()
@@ -129,15 +129,16 @@ public class PublicationController : Controller
                 PublicationId = userPost.Id
             };
             _context.Likes.Add(like);
-            _context.SaveChanges();
+            isLiked = true;
         }
         else
         {
             var like = _context.Likes.FirstOrDefault(l => l.UserId == userId && l.PublicationId == userPost.Id);
             _context.Entry(like).State = EntityState.Deleted;
-            _context.SaveChanges();
+            isLiked = false;
         }
-        
-        return Redirect(referrer);
+        _context.SaveChanges();
+        int likeCount = _context.Likes.Count(l => l.PublicationId == postId);
+        return Json(new { likeCount = likeCount, isLiked = isLiked });
     }
 }
