@@ -1,21 +1,24 @@
 using Instagram.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Instagram.Controllers;
 
 public class AccountController : Controller
 {
+    public InstaContext _context;
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IWebHostEnvironment _hostEnvironment;
     
-    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IWebHostEnvironment hostEnvironment)
+    public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IWebHostEnvironment hostEnvironment, InstaContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _hostEnvironment = hostEnvironment;
+        _context = context;
     }
     
     [HttpGet]
@@ -68,6 +71,12 @@ public class AccountController : Controller
         if (model.ImageFile == null)
         {
             ModelState.AddModelError("ImageFile", "Картинка обязательна для скачивания");
+            return View(model);
+        }
+
+        if (_context.Users.Where(u => u.UserName == model.UserName) != null && _context.Users.Where(u => u.Email == model.Email) != null)
+        {
+            ModelState.AddModelError("UserName", "Логин или Email уже существует");
             return View(model);
         }
         if (ModelState.IsValid)
