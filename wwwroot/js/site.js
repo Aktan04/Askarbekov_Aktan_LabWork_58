@@ -34,7 +34,6 @@ $(document).ready(function() {
                 } else {
                     $("#subscribeButton").text("Subscribe");
                 }
-                $("#followerCount").text(response.followerCount);
                 $("#followingCount").text(response.followingCount);
             },
             error: function(xhr, status, error) {

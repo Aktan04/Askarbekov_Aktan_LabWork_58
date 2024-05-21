@@ -74,7 +74,9 @@ public class AccountController : Controller
             return View(model);
         }
 
-        if (_context.Users.Where(u => u.UserName == model.UserName) != null && _context.Users.Where(u => u.Email == model.Email) != null)
+        User? findUserWithEmail = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+        User? findUserWithUserName = _context.Users.FirstOrDefault(u => u.UserName == model.UserName);
+        if (findUserWithEmail != null || findUserWithUserName != null)
         {
             ModelState.AddModelError("UserName", "Логин или Email уже существует");
             return View(model);

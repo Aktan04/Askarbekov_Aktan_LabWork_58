@@ -197,13 +197,11 @@ public class UserController : Controller
             isSubscribed = false;
         }
         await _context.SaveChangesAsync();
-        int followerCount = await _context.UserSubscriptions.CountAsync(us => us.TargetUserId == userId);
-        int followingCount = await _context.UserSubscriptions.CountAsync(us => us.SubscriberId == userId && us.TargetUserId == currentUserId);
+        int followingCount = await _context.UserSubscriptions.CountAsync(us => us.SubscriberId == userId);
 
         return Json(new 
         { 
             isSubscribed = isSubscribed, 
-            followerCount = followerCount, 
             followingCount = followingCount 
         });
     }
