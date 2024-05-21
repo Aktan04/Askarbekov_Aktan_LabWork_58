@@ -32,7 +32,6 @@
     </div>
 </div>
 <div class="container mt-5">
-
     <div class="row">
         <div class="col-md-3">
             <img src="@Model.User.Avatar" alt="Avatar" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
@@ -42,13 +41,13 @@
             <p>@Model.User.Description</p>
             <div class="row">
                 <div class="col-md-4">
-                    <p><strong>@Model.Publications.Count</strong> Posts</p>
+                    <p><strong id="postCount">@Model.Publications.Count</strong> Posts</p>
                 </div>
                 <div class="col-md-4">
-                    <p><strong>@Model.User.Followers.Count</strong> Followers</p>
+                    <p><strong>@Model.User.Followers.Count</strong> Подписки</p>
                 </div>
                 <div class="col-md-4">
-                    <p><strong>@Model.User.Subscriptions.Count</strong> Following</p>
+                    <p><strong>@Model.User.Subscriptions.Count</strong> Подписчики</p>
                 </div>
             </div>
         </div>
@@ -66,11 +65,13 @@
         {
             @foreach (var post in Model.Publications)
             {
-                <div class="col-md-4 col-sm-6 mb-3">
+                <div class="col-md-4 col-sm-6 mb-3" id="post-@post.Id">
                     <div class="card">
                         <a asp-action="CreateComment" asp-controller="Publication" asp-route-postId="@post.Id"><img src="@post.Avatar" alt="Post" class="card-img-top"></a>
                         <div class="card-body">
-                            <p class="card-text">@post.Description</p>
+                            <p class="card-text" id="post-description-@post.Id">@post.Description</p>
+                            <button class="btn btn-secondary edit-button" data-bs-toggle="modal" data-bs-target="#editPostModal-@post.Id">Edit</button>
+                            <button class="btn btn-danger delete-button" data-postid="@post.Id">Delete</button>
                         </div>
                         <div class="card-footer">
                             <div class="row">
@@ -78,8 +79,24 @@
                                     <small class="text-muted">Comments: <span>@post.Comments.Count</span></small>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><a asp-action="CreateLike" asp-controller="Publication" asp-route-postId="@post.Id">Likes:</a><span id="likeCount">@post.Likes.Count.ToString()</span></p>
-
+                                    <p>
+                                        <a href="#" class="like-button" data-postid="@post.Id">Likes:</a> 
+                                        <span id="like-count-@post.Id">@post.Likes.Count</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="editPostModal-@post.Id" tabindex="-1" aria-labelledby="editPostModalLabel-@post.Id" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editPostModalLabel-@post.Id">Edit Post</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <textarea class="form-control edit-description" data-postid="@post.Id">@post.Description</textarea>
+                                    <button class="btn btn-primary save-edit-button mt-2" data-postid="@post.Id">Save</button>
                                 </div>
                             </div>
                         </div>
