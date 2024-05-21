@@ -18,7 +18,10 @@
                             <p>Comments: <span>@Model.Publication.Comments.Count</span></p>
                         </div>
                         <div class="col-md-6">
-                            <p>Likes: <span>@Model.Publication.Likes.Count</span></p>
+                            <p>
+                                <a href="#" class="like-button" data-postid="@Model.Publication.Id">Likes:</a> 
+                                <span id="like-count-@Model.Publication.Id">@Model.Publication.Likes.Count</span>
+                            </p>
                         </div>
                     </div>
                     <div class="mt-4">

@@ -35,8 +35,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <p>
-                                            <a asp-action="CreateLike" asp-controller="Publication" asp-route-postId="@post.Id">Лайки:</a>
-                                            <span id="likeCount">@post.Likes.Count.ToString()</span>
+                                            <a href="#" class="like-button" data-postid="@post.Id">Likes:</a> 
+                                            <span id="like-count-@post.Id">@post.Likes.Count</span>
                                         </p>
                                     </div>
                                 </div>

@@ -20,24 +20,17 @@
                         <p>Posts: <span id="postCount">@Model.Publications.Count</span></p>
                     </div>
                     <div class="col-md-4">
-                        <p>Followers: <span id="followerCount">@Model.User.Followers.Count</span></p>
+                        <p>Подписки: <span id="followerCount">@Model.User.Followers.Count</span></p>
                     </div>
                     <div class="col-md-4">
-                        <p>Following: <span id="followingCount">@Model.User.Subscriptions.Count</span></p>
+                        <p>Подписчики: <span id="followingCount">@Model.User.Subscriptions.Count</span></p>
                     </div>
                     <div class="col-md-12">
-                        <!-- Subscribe Button -->
-                        @if (ViewBag.IsSubscribed)
-                        {
-                            <button class="btn btn-primary"><a class="text-white" asp-action="Describe" asp-controller="User" asp-route-userId="@Model.User.Id">Describe</a></button>
-
-                        }
-                        else
-                        {
-                            
-                            <button class="btn btn-primary"><a class="text-white" asp-action="Subcribe" asp-controller="User" asp-route-userId="@Model.User.Id">Subscribe</a></button>
-                        }
+                        <button id="subscribeButton" class="btn btn-primary" data-userid="@Model.User.Id">
+                            @(ViewBag.IsSubscribed ? "Unsubscribe" : "Subscribe")
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -70,7 +63,10 @@
                                         </p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><a asp-action="CreateLike" asp-controller="Publication" asp-route-postId="@post.Id">Likes:</a><span id="likeCount">@post.Likes.Count.ToString()</span></p>
+                                        <p>
+                                            <a href="#" class="like-button" data-postid="@post.Id">Likes:</a> 
+                                            <span id="like-count-@post.Id">@post.Likes.Count</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
