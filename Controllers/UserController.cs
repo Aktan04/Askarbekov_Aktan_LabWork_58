@@ -107,6 +107,40 @@ public class UserController : Controller
         return PartialView("/Views/User/_EditProfilePartialView.cshtml", user);
     }
     [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> DeletePost(int postId)
+    {
+        var post = await _context.Publications.FindAsync(postId);
+        if (post == null || post.UserId != Convert.ToInt32(_userManager.GetUserId(User)))
+        {
+            return Json(new { success = false, error = "Post not found or user unauthorized." });
+        }
+
+        _context.Publications.Remove(post);
+        await _context.SaveChangesAsync();
+        int targetUserId = Convert.ToInt32(_userManager.GetUserId(User));
+        var posts = _context.Publications.Where(p => p.UserId == targetUserId).ToList();
+        var postsCounter = posts.Count;
+        return Json(new { success = true, postCount = postsCounter });
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> EditPostDescription(int postId, string description)
+    {
+        var post = await _context.Publications.FindAsync(postId);
+        if (post == null || post.UserId != Convert.ToInt32(_userManager.GetUserId(User)))
+        {
+            return Json(new { success = false, error = "Post not found or user unauthorized." });
+        }
+
+        post.Description = description;
+        _context.Publications.Update(post);
+        await _context.SaveChangesAsync();
+        return Json(new { success = true });
+    }
+    
+    [Authorize]
     public IActionResult Profile(int id)
     {
         int? targetUserId = Convert.ToInt32(_userManager.GetUserId(User));
@@ -135,34 +169,42 @@ public class UserController : Controller
         return View(userViewModel);
     }
     [Authorize]
-    public IActionResult Subcribe(int userId)
+    [HttpPost]
+    public async Task<IActionResult> ToggleSubscription(int userId)
     {
-        int? targetUserId = Convert.ToInt32(_userManager.GetUserId(User));
-        if (userId == targetUserId)
+        int? currentUserId = Convert.ToInt32(_userManager.GetUserId(User));
+        if (userId == currentUserId)
         {
-            return NotFound();
+            return BadRequest("You cannot subscribe to yourself.");
         }
-        UserSubscription userSubscription = new UserSubscription()
+
+        var subscription = await _context.UserSubscriptions
+            .FirstOrDefaultAsync(us => us.SubscriberId == userId && us.TargetUserId == currentUserId);
+        bool isSubscribed;
+        if (subscription == null)
         {
-            SubscriberId = userId,
-            TargetUserId = targetUserId.Value
-        };
-        _context.UserSubscriptions.Add(userSubscription);
-        _context.SaveChanges();
-        return RedirectToAction("Profile", "User", new { id = userId });
-    }
-    [Authorize]
-    public async Task<IActionResult> Describe(int userId)
-    {
-        int? targetUserId = Convert.ToInt32(_userManager.GetUserId(User));
-        if (userId == targetUserId)
-        {
-            return NotFound();
+            UserSubscription newSubscription = new UserSubscription()
+            {
+                SubscriberId = userId,
+                TargetUserId = currentUserId.Value
+            };
+            _context.UserSubscriptions.Add(newSubscription);
+            isSubscribed = true;
         }
-        UserSubscription? us = await _context.UserSubscriptions.FirstOrDefaultAsync(us =>
-            us.TargetUserId == targetUserId && us.SubscriberId == userId);
-        _context.Entry(us).State = EntityState.Deleted;
+        else
+        {
+            _context.UserSubscriptions.Remove(subscription);
+            isSubscribed = false;
+        }
         await _context.SaveChangesAsync();
-        return RedirectToAction("Profile", "User", new { id = userId });
+        int followerCount = await _context.UserSubscriptions.CountAsync(us => us.TargetUserId == userId);
+        int followingCount = await _context.UserSubscriptions.CountAsync(us => us.SubscriberId == userId && us.TargetUserId == currentUserId);
+
+        return Json(new 
+        { 
+            isSubscribed = isSubscribed, 
+            followerCount = followerCount, 
+            followingCount = followingCount 
+        });
     }
 }
